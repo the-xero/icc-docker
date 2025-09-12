@@ -33,15 +33,23 @@ services:
     image: ghcr.io/the-xero/icc-docker:latest
     container_name: icc_docker
     restart: unless-stopped
+    privileged: true
+    sysctls:
+      net.ipv4.tcp_keepalive_time: 60
+      net.ipv4.tcp_keepalive_intvl: 3
+      net.ipv4.tcp_keepalive_probes: 5
     ports:
       - "8090:8090"   # ICC 포트
-      - "8800:8800"   # WEB 포트
+      - "8800:8800"    # WEB 포트
+      - "3306:3306"   # MySQL 포트
     volumes:
       - ./icc/etc:/etc
       - ./icc/mysql:/usr/local/mysql
       - ./icc/var/tmp:/var/tmp
       - ./icc/var/run/upload:/var/run/upload
+      - ./iptime_router:/iptime_router
 ```
+- 제조사의 설치 스크립트에 설정된 부분을 그대로 docker-compose.yml로 수정함.
 - 사용하는 포트에 대해 포트포워딩 또는 방화벽 설정이 필요할 수 있습니다.
 
 ### 3. 컨테이너 실행
