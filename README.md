@@ -45,14 +45,15 @@ services:
       - ./icc/var/tmp:/var/tmp
       - ./icc/var/run/upload:/var/run/upload
 ```
+- 사용하는 포트에 대해 포트포워딩 또는 방화벽 설정이 필요할 수 있습니다.
 
 ### 3. 컨테이너 실행
 `docker-compose up -d` 로 실행
 - ICC 웹 인터페이스 접속 : `http://localhost:8800`
 - ICC 서비스 포트 : `8090`
 
----
 
+---
 ## 이미지 업데이트
 GitHub Actions 워크플로우가 매일 최신 버전을 자동으로 GHCR에 푸시합니다.
 
