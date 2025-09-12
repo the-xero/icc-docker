@@ -1,7 +1,6 @@
 # IPTIME 통합 관리 (ICC Docker)
 이 레포지토리는 **IPTIME 통합 관리(ICC)** 서버를 Docker 컨테이너로 쉽게 실행하고, 최신 버전을 자동으로 GitHub Actions를 통해 빌드/등록하는 워크플로우를 제공합니다.
 
----
 
 ## ICC 소개
 
@@ -9,7 +8,6 @@
 - 본 Docker 이미지는 **자동 업데이트/감시 기능을 제거**하고, ICC 본체와 웹 인터페이스만 운영하도록 간소화되어 있습니다.
 - MySQL은 컨테이너 내부에서만 운영되며 외부 노출이 필요 없습니다.
 
----
 
 ## GitHub Actions 워크플로우
 
@@ -17,7 +15,6 @@
 - GHCR(GitHub Container Registry)에 최신 버전과 `latest` 태그로 자동 푸시됩니다.
 - 자동 업데이트/감시 스크립트(`icc_watch.sh`)는 제거되어 있습니다.
 
----
 
 ## Docker Compose 사용법
 
@@ -53,11 +50,11 @@ services:
 - ICC 서비스 포트 : `8090`
 
 
----
+
 ## 이미지 업데이트
 GitHub Actions 워크플로우가 매일 최신 버전을 자동으로 GHCR에 푸시합니다.
 
----
+
 
 ## 폴더 구조
 ```
