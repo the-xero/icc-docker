@@ -1,0 +1,36 @@
+name: Build & Publish ICC Image
+
+on:
+  schedule:
+    - cron: '0 0 * * *'   # 매일 자정 실행
+  workflow_dispatch:       # 수동 실행 가능
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get Latest Version
+        run: |
+          VER=$(curl -s https://download.iptime.co.kr/icc/icc_image.version | head -n1)
+          echo "LATEST=$VER" >> $GITHUB_ENV
+
+      - name: Download ICC Tarball
+        run: |
+          wget https://download.iptime.co.kr/icc/icc_image_${LATEST}.tar.gz
+          gunzip -f icc_image_${LATEST}.tar.gz
+
+      - name: Load Docker Image
+        run: docker load -i icc_image_${LATEST}.tar
+
+      - name: Tag & Push to GHCR
+        run: |
+          IMAGE=ghcr.io/${{ github.repository_owner }}/icc
+          docker tag icc:${LATEST} $IMAGE:${LATEST}
+          docker tag icc:${LATEST} $IMAGE:latest
+          echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker push $IMAGE:${LATEST}
+          docker push $IMAGE:latest
