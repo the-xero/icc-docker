@@ -3,15 +3,9 @@ services:
     image: ghcr.io/the-xero/icc-docker:latest
     container_name: icc_docker
     restart: unless-stopped
-#    privileged: true
-#    sysctls:
-#      net.ipv4.tcp_keepalive_time: 60
-#      net.ipv4.tcp_keepalive_intvl: 3
-#      net.ipv4.tcp_keepalive_probes: 5
     ports:
       - "8090:8090"   # ICC 포트
       - "8800:8800"    # WEB 포트
-#      - "3306:3306"   # MySQL 포트, 컨테이너 내부에서 사용함
     volumes:
       - ./icc/etc:/etc
       - ./icc/mysql:/usr/local/mysql
