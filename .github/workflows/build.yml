@@ -28,9 +28,9 @@ jobs:
 
       - name: Tag & Push to GHCR
         run: |
-          IMAGE=ghcr.io/${{ github.repository_owner }}/icc
-          docker tag icc:${LATEST} $IMAGE:${LATEST}
-          docker tag icc:${LATEST} $IMAGE:latest
+          IMAGE=ghcr.io/${{ github.repository_owner }}/icc-docker
+          docker tag icc-docker:${LATEST} $IMAGE:${LATEST}
+          docker tag icc-docker:${LATEST} $IMAGE:latest
           echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker push $IMAGE:${LATEST}
           docker push $IMAGE:latest
