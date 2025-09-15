@@ -2,8 +2,8 @@ name: Build & Publish ICC Image
 
 on:
   schedule:
-    - cron: '0 0 * * *'   # 매일 자정 실행
-  workflow_dispatch:       # 수동 실행 가능
+    - cron: '7 0 * * *'   # 01:07분 업데이트
+  workflow_dispatch:
 
 jobs:
   build:
@@ -15,41 +15,44 @@ jobs:
 
       - name: Get Latest Version
         run: |
-          # User-Agent 지정, 타임아웃 10초
+          # 1️⃣ Curl 시도
           VER=$(curl -s -A "Mozilla/5.0" --max-time 10 http://download.iptime.co.kr/icc/icc_image.version | head -n1)
-          # 접속 실패 또는 빈 문자열이면 기본값 사용
-          if [[ -z "$VER" ]]; then
-            echo "❌ Failed to get latest version, using default 0_918"
-            VER="0_918"
+          if [[ -n "$VER" ]]; then
+            echo "✅ Fetched latest version from ICC server: $VER"
+            echo "$VER" > icc_version
           else
-            echo "✅ Latest version: $VER"
+            # 2️⃣ 실패 시 외부 서버에서 업데이트 해 둔 icc_version 사용
+            echo "❌ Failed to fetch version from ICC server, using repository icc_version file"
+            if [ ! -f icc_version ]; then
+              echo "⚠️ icc_version file not found in repository, using default 0_918"
+              VER="0_918"
+            else
+              VER=$(head -n1 icc_version)
+            fi
           fi
-      
+
+          echo "Using ICC version: $VER"
           echo "LATEST=$VER" >> $GITHUB_ENV
 
       - name: Download ICC Tarball
         run: |
-          echo "Downloading icc_image_${LATEST}.tar.gz..."
-          wget -q "http://download.iptime.co.kr/icc/icc_image_${LATEST}.tar.gz" -O "icc_image_${LATEST}.tar.gz" || { echo "❌ Download failed"; exit 1; }
-          echo "✅ Download complete"
+          echo "Downloading ICC image for version $LATEST"
+          wget -q https://download.iptime.co.kr/icc/icc_image_${LATEST}.tar.gz
+          if [ $? -ne 0 ]; then
+            echo "❌ Failed to download ICC image, exiting workflow."
+            exit 1
+          fi
 
       - name: Load Docker Image
         run: |
-          echo "Loading Docker image from tar.gz..."
-          docker load -i "icc_image_${LATEST}.tar.gz" || { echo "❌ Docker load failed"; exit 1; }
-          echo "✅ Docker image loaded"
+          docker load -i icc_image_${LATEST}.tar.gz
 
       - name: Tag & Push to GHCR
         run: |
           IMAGE=ghcr.io/${{ github.repository_owner }}/icc-docker
           IMAGE_ID=$(docker images -q | head -n 1)
-          if [[ -z "$IMAGE_ID" ]]; then
-            echo "❌ No Docker image found to tag."
-            exit 1
-          fi
           docker tag $IMAGE_ID $IMAGE:${LATEST}
           docker tag $IMAGE_ID $IMAGE:latest
           echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker push $IMAGE:${LATEST}
           docker push $IMAGE:latest
-          echo "✅ Docker image pushed to GHCR"
