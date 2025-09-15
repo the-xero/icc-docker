@@ -15,22 +15,24 @@ jobs:
 
       - name: Get Latest Version
         run: |
-          VER=$(curl -s https://download.iptime.co.kr/icc/icc_image.version | head -n1)
+          VER=$(curl -s http://download.iptime.co.kr/icc/icc_image.version | head -n1)
           echo "LATEST=$VER" >> $GITHUB_ENV
 
       - name: Download ICC Tarball
         run: |
           wget https://download.iptime.co.kr/icc/icc_image_${LATEST}.tar.gz
-          gunzip -f icc_image_${LATEST}.tar.gz
 
       - name: Load Docker Image
-        run: docker load -i icc_image_${LATEST}.tar
+        run: |
+          docker load -i icc_image_${LATEST}.tar.gz
 
       - name: Tag & Push to GHCR
         run: |
           IMAGE=ghcr.io/${{ github.repository_owner }}/icc-docker
-          docker tag icc:${LATEST} $IMAGE:${LATEST}
-          docker tag icc:${LATEST} $IMAGE:latest
+          # 방금 로드된 이미지의 ID를 가져와 태깅
+          IMAGE_ID=$(docker images -q | head -n 1)
+          docker tag $IMAGE_ID $IMAGE:${LATEST}
+          docker tag $IMAGE_ID $IMAGE:latest
           echo "${{ secrets.CR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
           docker push $IMAGE:${LATEST}
           docker push $IMAGE:latest
