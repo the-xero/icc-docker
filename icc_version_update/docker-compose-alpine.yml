@@ -7,5 +7,5 @@ services:
     environment:
       - GITHUB_ACTOR=${GITHUB_ACTOR}
       - GITHUB_TOKEN=${GITHUB_TOKEN}
-      - GITHUB_REPOSITORY=${GITHUB_REPOSITORY}
+      # - GITHUB_REPOSITORY=${GITHUB_REPOSITORY}  # Default : main
     restart: "no"
