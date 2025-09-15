@@ -15,13 +15,17 @@ jobs:
 
       - name: Get Latest Version
         run: |
-          VER=$(curl -s http://download.iptime.co.kr/icc/icc_image.version | head -n1)
+          # User-Agent 지정, 타임아웃 10초
+          VER=$(curl -s -A "Mozilla/5.0" --max-time 10 http://download.iptime.co.kr/icc/icc_image.version | head -n1)
+          # 접속 실패 또는 빈 문자열이면 기본값 사용
           if [[ -z "$VER" ]]; then
-            echo "❌ Failed to get latest version."
-            exit 1
+            echo "❌ Failed to get latest version, using default 0_918"
+            VER="0_918"
+          else
+            echo "✅ Latest version: $VER"
           fi
+      
           echo "LATEST=$VER" >> $GITHUB_ENV
-          echo "✅ Latest version: $VER"
 
       - name: Download ICC Tarball
         run: |
