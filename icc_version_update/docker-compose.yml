@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   icc_version_update:
     build: ./icc_version_update
