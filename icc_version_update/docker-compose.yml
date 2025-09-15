@@ -1,9 +1,11 @@
 services:
   icc_version_update:
-    build: .
+    build:
+      context: ./icc_version_update
+      dockerfile: Dockerfile-alpine
     container_name: icc_version_update
-    restart: unless-stopped
     environment:
-      GITHUB_REPO: "your-username/your-repo"
-      GITHUB_TOKEN: "ghp_XXXXXXXXXXXXXXXXXXXX"  # GitHub Personal Access Token
-      # GITHUB_BRANCH: "main" # Default : main
+      GITHUB_ACTOR: {ID}
+      GITHUB_TOKEN: {TOKEN}
+      GITHUB_REPOSITORY: {REPOSITORY-NAME}
+    restart: always
