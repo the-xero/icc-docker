@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  icc_version_update:
+    build: ./icc_version_update
+    container_name: icc_version_update
+    restart: unless-stopped
+    environment:
+      GITHUB_REPO: "your-username/your-repo"
+      GITHUB_BRANCH: "main"
+      GITHUB_TOKEN: "ghp_XXXXXXXXXXXXXXXXXXXX"  # GitHub Personal Access Token
