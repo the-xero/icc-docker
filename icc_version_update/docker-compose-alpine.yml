@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile-alpine
     container_name: icc_version_update
     environment:
-      - GITHUB_ACTOR=${GITHUB_ACTOR}
-      - GITHUB_TOKEN=${GITHUB_TOKEN}
-      # - GITHUB_REPOSITORY=${GITHUB_REPOSITORY}  # Default : main
-    restart: "no"
+      GITHUB_ACTOR: {ID}
+      GITHUB_TOKEN: {TOKEN}
+      GITHUB_REPOSITORY: {REPOSITORY-NAME}
+    restart: always
